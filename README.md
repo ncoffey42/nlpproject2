@@ -8,4 +8,8 @@
 
 ## Milestone 1 Assignment
 
+- Use word embeddings analysis to analyze select crime novels (up to three per author) available on project Gutenberg; by author Agatha Christie
+- Do word embeddings-based analysis -- produce work embeddings for your author's works and use those to do similar analysis like with plot or author analysis but by using embeddings metrics to assess the plot;
+implement a custom, ultra-simplified prompt interface to run your analysis
+
 Agatha Christie -- analyze the novels' plot using word embeddings  
