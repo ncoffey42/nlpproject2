@@ -1,0 +1,5 @@
+embeddings {
+    tensor_name: "init_embedding"
+    metadata_path: "init_words_metadata.tsv"
+    tensor_path: "init_embedding.tsv"
+}
