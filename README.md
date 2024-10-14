@@ -13,3 +13,8 @@
 implement a custom, ultra-simplified prompt interface to run your analysis
 
 Agatha Christie -- analyze the novels' plot using word embeddings  
+
+## Visualization:
+
+1. Install tensorflow - pip install tensorflow
+2. Run Tensorboard - tensorboard --logdir=./projector_files/
