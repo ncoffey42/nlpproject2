@@ -17,4 +17,5 @@ Agatha Christie -- analyze the novels' plot using word embeddings
 ## Visualization:
 
 1. Install tensorflow - pip install tensorflow
-2. Run Tensorboard - tensorboard --logdir=./projector_files/
+2. Run Tensorboard and go to localhost:6006 - tensorboard --logdir=./projector_files/
+3. In the top-righthand corner select Projector

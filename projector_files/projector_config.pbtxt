@@ -2,7 +2,7 @@ embeddings {
     
     tensor_name: "Styles untrained"
     metadata_path: "styles_words.tsv"
-    tensor_path: "trained0_styles_wv.tsv"
+    tensor_path: "init_styles_wv.tsv"
 }
 
 embeddings {
