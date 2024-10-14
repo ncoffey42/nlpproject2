@@ -14,7 +14,14 @@ embeddings {
 
 embeddings {
 
-    tensor_name: "Styles all 3"
+    tensor_name: "Styles trained on 3"
     tensor_path: "trained1_styles_wv.tsv"
+    metadata_path: "styles_words.tsv"
+}
+
+embeddings {
+
+    tensor_name: "Styles trained on 12"
+    tensor_path: "all_12_styles_wv.tsv"
     metadata_path: "styles_words.tsv"
 }
