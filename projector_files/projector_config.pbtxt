@@ -13,6 +13,11 @@ embeddings {
 }
 
 embeddings {
+    tensor_name: "MWE Styles"
+    tensor_path: "styles_mwe.tsv"
+    metadata_path: "mwe_meta_styles.tsv"
+}
+embeddings {
 
     tensor_name: "Styles trained on 3"
     tensor_path: "trained1_styles_wv.tsv"
@@ -25,3 +30,4 @@ embeddings {
     tensor_path: "all_12_styles_wv.tsv"
     metadata_path: "styles_words.tsv"
 }
+
