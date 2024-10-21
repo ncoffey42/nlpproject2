@@ -19,6 +19,10 @@ Agatha Christie -- analyze the novels' plot using word embeddings
 1. Run Tensorboard and go to localhost:6006 - tensorboard --logdir=./projector_files/
 2. In the top-righthand corner select Projector
 
-## Google Doc With Info
+## Google Docs
 
-[Click here](https://docs.google.com/document/d/1SzlvAJDJ_J6TmqEKMKzm24yskDTdLdnPAg5V2sZGQQU/edit#heading=h.drgugs2suv61)
+[Info Doc](https://docs.google.com/document/d/1SzlvAJDJ_J6TmqEKMKzm24yskDTdLdnPAg5V2sZGQQU/edit#heading=h.drgugs2suv61)
+
+[LaTeX Code for Project 1](https://docs.google.com/document/d/1CAOgCz53kaDHoT7jyzDVTkqXNURDrYvL9NK5dGl2nt0/edit?tab=t.0)
+
+[Slides for Project 1](https://docs.google.com/presentation/d/1ZUDemqwNvS-08xp7VWl1Ov0Y36tAkW7FoDArsWdbfEw/edit#slide=id.p)
