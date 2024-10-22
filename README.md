@@ -2,9 +2,17 @@
 
 ## Setup
 
+### Project Setup
+
 1. Clone the repository
 2. Install the required packages using `pip install -r requirements.txt`
 3. Look at and run the ipynb files (if you want)
+
+### Visualization Setup
+
+1. Run Tensorboard using `tensorboard --logdir=./projector_files/`
+2. Go to localhost:6006 in your browser.
+3. In the top-righthand corner select `Projector`
 
 ## Milestone 1 Assignment
 
@@ -13,11 +21,6 @@
 implement a custom, ultra-simplified prompt interface to run your analysis
 
 Agatha Christie -- analyze the novels' plot using word embeddings  
-
-## Visualization
-
-1. Run Tensorboard and go to localhost:6006 - tensorboard --logdir=./projector_files/
-2. In the top-righthand corner select Projector
 
 ## Google Docs
 
