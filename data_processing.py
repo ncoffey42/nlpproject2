@@ -68,3 +68,40 @@ def save_metadata(vocab, metadata_file_path):
     with open(metadata_file_path, 'w') as f:
         for token in vocab:
             f.write(f"{token}\n")
+
+
+# def coref(file_path):
+#     # Step 1: Read the text
+#     with open(file_path, 'r', encoding='utf-8') as f:
+#         text = f.read().lower()  # Lowercase for normalization
+
+#     # Step 2: Apply coreference resolution
+#     doc = nlp(text)
+#     resolved_text = doc._.coref_resolved
+
+#     # Step 3: Apply NLTK's sent_tokenize to split text into sentences
+#     sentences = sent_tokenize(resolved_text)
+
+#     # Step 4: Apply MWE Tokenizer for character names
+#     mwe_tokenizer = MWETokenizer([
+#         ('alfred', 'inglethorp'),
+#         ('mr.', 'inglethorp'),
+#         ('emily', 'inglethorp'),
+#         ('mrs.', 'inglethorp')
+#     ], separator='_')
+
+#     # Tokenize the resolved sentences into words and apply MWE tokenizer
+#     mwe_tokens = [mwe_tokenizer.tokenize(word_tokenize(sentence)) for sentence in sentences]
+
+#     # Step 5: Flatten the tokens into a single list
+#     tokens = [word for sentence in mwe_tokens for word in sentence]
+
+#     # Step 6: Remove stop words and lemmatize
+#     stop_words = set(stopwords.words('english'))
+#     lemmatizer = WordNetLemmatizer()
+#     cleaned_tokens = [
+#         lemmatizer.lemmatize(word) for word in tokens
+#         if word.isalnum() and word not in stop_words
+#     ]
+
+#     return cleaned_tokens

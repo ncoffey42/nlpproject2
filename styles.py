@@ -4,11 +4,8 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize, MWETokenizer
 from nltk.stem import WordNetLemmatizer
-import matplotlib.pyplot as plt
 import numpy as np
-import re
 from gensim.models import Word2Vec
-import os
 from data_processing import preprocess, save_metadata
 
 
