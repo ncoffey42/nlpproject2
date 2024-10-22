@@ -8,15 +8,31 @@ import numpy as np
 from gensim.models import Word2Vec
 from data_processing import preprocess, save_metadata
 
+tokenizer = MWETokenizer([
+        ('alfred', 'inglethorp'),
+        ('mr.', 'inglethorp'),
+        ('emily', 'inglethorp'),
+        ('mrs.', 'inglethorp')
+    ], separator='')
 
-styles_tokens = preprocess("./Data/books/The-Mysterious-Affair-at-Styles.txt")
+word_dict = {
+    'alfredinglethorp': 'alfredinglethorp',
+    'alfred': 'alfredinglethorp',
+    'mr.inglethorp': 'alfredinglethorp',
+    'inglethorp': 'alfredinglethorp',
+    'emilyinglethorp': 'emilyinglethorp',
+    'emily': 'emilyinglethorp',
+    'mrs.inglethorp': 'emilyinglethorp'
+}
+
+styles_tokens = preprocess("./Data/books/The-Mysterious-Affair-at-Styles.txt", tokenizer, word_dict)
 
 
-for sentence in styles_tokens:
-    if 'alfred_inglethorp' in sentence:
-        print("Albert Inglethorp found!")
-    if 'emily_inglethorp' in sentence:
-        print("Emily Inglethorp found!")
+# for sentence in styles_tokens:
+#     if 'alfred_inglethorp' in sentence:
+#         print("Albert Inglethorp found!")
+#     if 'emily_inglethorp' in sentence:
+#         print("Emily Inglethorp found!")
 
 #print(styles_tokens[:50])  # Print first 50 tokens to check
 
@@ -58,16 +74,15 @@ w_vec = np.array([model.wv[word] for word in words]) # Word Vectors
 
 print(words[:10])
 
-#save_metadata(vocab, "./projector_files/mwe_metadata_styles.tsv")
 
 # Then separate our Styles word vector from the rest 
 # styles_words = set([word for sentence in styles_tokens for word in sentence])
 # filtered_words = [word for word in styles_words if word in model.wv]
 
-np.savetxt('./projector_files/styles_mwe.tsv', w_vec, delimiter='\t')
+# np.savetxt('./projector_files/styles_mwe.tsv', w_vec, delimiter='\t')
 
-with open('./projector_files/mwe_meta_styles.tsv', 'w', encoding='utf-8') as f:
-    for word in words:
-        f.write(f"{word}\n")
+# with open('./projector_files/mwe_meta_styles.tsv', 'w', encoding='utf-8') as f:
+#     for word in words:
+#         f.write(f"{word}\n")
 
 print('end')

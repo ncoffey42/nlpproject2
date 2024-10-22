@@ -1,21 +1,17 @@
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize, MWETokenizer
 from nltk.stem import WordNetLemmatizer
+import sys
 import csv
 
 # Function for preprocessing: Normalization & Tokenization, Stopword removal, OPTIONALLY investigate Lemmatization 
-def preprocess(file_path):
+def preprocess(file_path, tokenizer, word_dict):
     with open(file_path, encoding='utf-8') as f:
         text = f.read().lower() # Lowercase
 
 
     # Mutli-word expression to separate the Inglethorps
-    mwe_tokenizer = MWETokenizer([
-        ('alfred', 'inglethorp'),
-        ('mr.', 'inglethorp'),
-        ('emily', 'inglethorp'),
-        ('mrs.', 'inglethorp')
-    ], separator='_')
+    mwe_tokenizer = tokenizer
 
 
     # Tokenization
@@ -24,11 +20,11 @@ def preprocess(file_path):
 
     mwe_tokens = [mwe_tokenizer.tokenize(sentence) for sentence in tokens]
 
-    print(mwe_tokens[:50])
+    print(mwe_tokens[:50], file=sys.stderr)
 
 
-    if 'mr._inglethorp' in mwe_tokens:
-        print("MR INGLETHORP!")
+    # if 'mr._inglethorp' in mwe_tokens:
+    #     print("MR INGLETHORP!")
     #flattened_tokens = [word for sentence in tokens for word in sentence]
     #print(flattened_tokens)
 
@@ -37,16 +33,16 @@ def preprocess(file_path):
 
 
 
-    print("after")
+    print("after", file=sys.stderr)
     # Substitute references to the same characters
     sub_tokens = []
     for sentence in tokens:
         sub_sentence = []
         for word in sentence:
-            if word in ['alfred', 'alfred_inglethorp', 'mr._inglethorp', 'inglethorp']:
-                sub_sentence.append('alfredinglethorp')
-            elif word in ['emily', 'emily_inglethorp', 'mrs._inglethorp']:
-                sub_sentence.append('emilyinglethorp')
+            if word in word_dict.keys():
+                #print to stderr
+                print("word found:", word, word_dict[word], file = sys.stderr)
+                sub_sentence.append(word_dict[word])
             else:
                 sub_sentence.append(word)
         sub_tokens.append(sub_sentence)  # Keep sentences as lists of tokens
