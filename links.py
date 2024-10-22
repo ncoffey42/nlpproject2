@@ -25,6 +25,7 @@ word_dict = {
     'marthe': 'marthedaubreuil',
     'herculepoirot': 'poirot',
     'poirot': 'poirot',
+    'poirots': 'poirot',
     'mr.poirot': 'poirot',
     'jackrenauld': 'jack',
     'jack': 'jack',

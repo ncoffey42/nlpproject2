@@ -31,3 +31,16 @@ embeddings {
     metadata_path: "styles_words.tsv"
 }
 
+embeddings {
+
+    tensor_name: "Links mwe"
+    tensor_path: "links_mwe.tsv"
+    metadata_path: "mwe_meta_links.tsv"
+}
+
+embeddings {
+
+    tensor_name: "Ackroyd mwe"
+    tensor_path: "ackroyd_mwe.tsv"
+    metadata_path: "mwe_meta_ackroyd.tsv"
+}
