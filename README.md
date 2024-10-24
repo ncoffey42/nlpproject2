@@ -8,6 +8,13 @@
 2. Install the required packages using `pip install -r requirements.txt`
 3. Look at and run the ipynb files (if you want)
 
+### Data Setup (to reproduce what we did)
+
+1. Download the data from [Project Gutenberg](https://www.gutenberg.org/) (Sample code to do this is is `test.ipynb`).
+2. Run `python3 nltk_downloads.py` to download the required nltk data.
+3. Create a python file that looks similar to `links.py` to store the links to the books you want to analyze. We ran `ackroyd.py`, `links.py` and `styles.py` for our analysis. Run the file when you are done to create the proper tensorboard files.
+4. For tensorboard visualization, edit `projector_files/projector_config.pbtxt` and create a new configuration. Look at that file for syntax.
+
 ### Visualization Setup
 
 1. Run Tensorboard using `tensorboard --logdir=./projector_files/`
@@ -22,7 +29,7 @@ implement a custom, ultra-simplified prompt interface to run your analysis
 
 Agatha Christie -- analyze the novels' plot using word embeddings  
 
-## Google Docs
+## Docs
 
 [Info Doc](https://docs.google.com/document/d/1SzlvAJDJ_J6TmqEKMKzm24yskDTdLdnPAg5V2sZGQQU/edit#heading=h.drgugs2suv61)
 

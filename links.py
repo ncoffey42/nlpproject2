@@ -9,7 +9,8 @@ from gensim.models import Word2Vec
 from data_processing import preprocess, save_metadata
 import os
 
-
+# Define what we need to preprocess
+# These were made mostly from the Data/book_metadata folder. But we ended up manually looking up characters to do this
 tokenizer = MWETokenizer([
         ('hercule', 'poirot'),
         ('mr.', 'poirot'),
@@ -33,30 +34,27 @@ word_dict = {
     'paul': 'paul'
 }
 
+#preprocess
 links_tokens = preprocess("./Data/books/The-Murder-on-the-Links.txt", tokenizer=tokenizer, word_dict=word_dict)
 
+#model
 model = Word2Vec(links_tokens, vector_size=100, window=5, min_count=1, sg=0) #CBOW model
-
 
 # Train model on novels as specified
 model.build_vocab(links_tokens)
 model.train(links_tokens, total_examples=model.corpus_count, epochs=5)
 
+# Gets words from models vocabularly   
+words = list(model.wv.index_to_key)
 
-words = list(model.wv.index_to_key) # Gets words from models vocabularly                             
-w_vec = np.array([model.wv[word] for word in words]) # Word Vectors
+# Word Vectors
+w_vec = np.array([model.wv[word] for word in words])
+
 
 print(words[:10])
 
-
-# Then separate our Styles word vector from the rest 
-# styles_words = set([word for sentence in links_tokens for word in sentence])
-# filtered_words = [word for word in styles_words if word in model.wv]
-
+#Save files
 np.savetxt('./projector_files/links_mwe.tsv', w_vec, delimiter='\t')
-
-with open('./projector_files/mwe_meta_links.tsv', 'w', encoding='utf-8') as f:
-    for word in words:
-        f.write(f"{word}\n")
+save_metadata(words, './projector_files/mwe_meta_links.tsv')
 
 print('end')

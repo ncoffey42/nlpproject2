@@ -6,13 +6,28 @@ import csv
 
 # Function for preprocessing: Normalization & Tokenization, Stopword removal, OPTIONALLY investigate Lemmatization 
 def preprocess(file_path, tokenizer, word_dict):
+    '''
+    args:
+
+    file_path: str -- path to the book file
+    tokenizer: MWETokenizer -- multi-word expression tokenizer (used for character names that should be treated as a single token, like ryan peruski should be ryanperuski)
+    word_dict: dict -- dictionary mapping words to their corresponding character names (when multiple tokens should be treated as the same token, like ryanperuski and ryan both should map to Ryan)
+
+    returns:
+    cleaned tokens: as a 2D list of strings -- list of sentences, each sentence is a list of tokens
+
+    console output:
+    prints some testing to stderr. If you want to avoid, run with 2> /dev/null
+    
+    '''
+
+    #Open file
     with open(file_path, encoding='utf-8') as f:
         text = f.read().lower() # Lowercase
 
 
-    # Mutli-word expression to separate the Inglethorps
+    # Mutli-word expression to combine character names into one token
     mwe_tokenizer = tokenizer
-
 
     # Tokenization
     sentences = sent_tokenize(text)
@@ -23,18 +38,9 @@ def preprocess(file_path, tokenizer, word_dict):
     print(mwe_tokens[:50], file=sys.stderr)
 
 
-    # if 'mr._inglethorp' in mwe_tokens:
-    #     print("MR INGLETHORP!")
-    #flattened_tokens = [word for sentence in tokens for word in sentence]
-    #print(flattened_tokens)
-
-    #if 'mrs._inglethorp' in flattened_tokens:
-    #    print("mrsInglethorp!!!")
-
-
-
     print("after", file=sys.stderr)
-    # Substitute references to the same characters
+
+    # Substitute references to the same characters (using word_dict)
     sub_tokens = []
     for sentence in tokens:
         sub_sentence = []
@@ -52,52 +58,24 @@ def preprocess(file_path, tokenizer, word_dict):
     stop_words = set(stopwords.words('english'))
     clean_tokens = [[word for word in sentence if word.isalnum() and word not in stop_words] for sentence in sub_tokens]
 
-    #lemmatizer = WordNetLemmatizer()
-    # Part of Speech = Verb
-    #tokens = [[lemmatizer.lemmatize(word, pos='v') for word in sentence] for sentence in tokens]
+    #Lemmatize
+    lemmatizer = WordNetLemmatizer()
+    lem_tokens = [[lemmatizer.lemmatize(word, pos='v') for word in sentence] for sentence in clean_tokens]
 
-    #return sub_tokens
-    return clean_tokens
+    return lem_tokens
 
 
 def save_metadata(vocab, metadata_file_path):
+    '''
+    args:
+    vocab: list of strings -- list of tokens
+    metadata_file_path: str -- path to the metadata file
+
+    returns: None
+
+    Writes the tokens to the metadata file
+    
+    '''
     with open(metadata_file_path, 'w') as f:
         for token in vocab:
             f.write(f"{token}\n")
-
-
-# def coref(file_path):
-#     # Step 1: Read the text
-#     with open(file_path, 'r', encoding='utf-8') as f:
-#         text = f.read().lower()  # Lowercase for normalization
-
-#     # Step 2: Apply coreference resolution
-#     doc = nlp(text)
-#     resolved_text = doc._.coref_resolved
-
-#     # Step 3: Apply NLTK's sent_tokenize to split text into sentences
-#     sentences = sent_tokenize(resolved_text)
-
-#     # Step 4: Apply MWE Tokenizer for character names
-#     mwe_tokenizer = MWETokenizer([
-#         ('alfred', 'inglethorp'),
-#         ('mr.', 'inglethorp'),
-#         ('emily', 'inglethorp'),
-#         ('mrs.', 'inglethorp')
-#     ], separator='_')
-
-#     # Tokenize the resolved sentences into words and apply MWE tokenizer
-#     mwe_tokens = [mwe_tokenizer.tokenize(word_tokenize(sentence)) for sentence in sentences]
-
-#     # Step 5: Flatten the tokens into a single list
-#     tokens = [word for sentence in mwe_tokens for word in sentence]
-
-#     # Step 6: Remove stop words and lemmatize
-#     stop_words = set(stopwords.words('english'))
-#     lemmatizer = WordNetLemmatizer()
-#     cleaned_tokens = [
-#         lemmatizer.lemmatize(word) for word in tokens
-#         if word.isalnum() and word not in stop_words
-#     ]
-
-#     return cleaned_tokens
