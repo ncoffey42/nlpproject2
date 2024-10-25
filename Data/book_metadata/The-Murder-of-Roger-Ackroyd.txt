@@ -1,3 +1,4 @@
 ﻿protagionist: Hercule Poirot
 antagonist: Dr. James Shepherd
 climax chapter: 26
+murder weapon: dagger
