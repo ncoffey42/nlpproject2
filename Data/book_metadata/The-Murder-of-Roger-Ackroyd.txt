@@ -1,5 +1,5 @@
-﻿protagionist: Hercule Poirot
-antagonist: Dr. James Shepherd
-victim: Roger Ackroyd
+﻿protagonist: poirot
+antagonist: jamesshepherd
+victim: roger
 climax chapter: 26
 murder weapon: dagger

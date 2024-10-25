@@ -6,19 +6,17 @@ import sys
 import csv
 
 # Function for preprocessing: Normalization & Tokenization, Stopword removal, OPTIONALLY investigate Lemmatization 
-def preprocess(file_path, tokenizer, word_dict):
+def preprocess(file_path, tokenizer, word_dict, lem):
     '''
     args:
 
     file_path: str -- path to the book file
     tokenizer: MWETokenizer -- multi-word expression tokenizer (used for character names that should be treated as a single token, like ryan peruski should be ryanperuski)
     word_dict: dict -- dictionary mapping words to their corresponding character names (when multiple tokens should be treated as the same token, like ryanperuski and ryan both should map to Ryan)
+    lem: bool -- whether to lemmatize the tokens or not
 
     returns:
     cleaned tokens: as a 2D list of strings -- list of sentences, each sentence is a list of tokens
-
-    console output:
-    prints some testing to stderr. If you want to avoid, run with 2> /dev/null
     
     '''
 
@@ -36,19 +34,12 @@ def preprocess(file_path, tokenizer, word_dict):
 
     mwe_tokens = [mwe_tokenizer.tokenize(sentence) for sentence in tokens]
 
-    print(mwe_tokens[:50], file=sys.stderr)
-
-
-    print("after", file=sys.stderr)
-
     # Substitute references to the same characters (using word_dict)
     sub_tokens = []
     for sentence in tokens:
         sub_sentence = []
         for word in sentence:
             if word in word_dict.keys():
-                #print to stderr
-                print("word found:", word, word_dict[word], file = sys.stderr)
                 sub_sentence.append(word_dict[word])
             else:
                 sub_sentence.append(word)
@@ -60,10 +51,11 @@ def preprocess(file_path, tokenizer, word_dict):
     clean_tokens = [[word for word in sentence if word.isalnum() and word not in stop_words] for sentence in sub_tokens]
 
     #Lemmatize
-    lemmatizer = WordNetLemmatizer()
-    lem_tokens = [[lemmatizer.lemmatize(word, pos='v') for word in sentence] for sentence in clean_tokens]
-
-    return lem_tokens
+    if lem:
+        lemmatizer = WordNetLemmatizer()
+        lem_tokens = [[lemmatizer.lemmatize(word, pos='v') for word in sentence] for sentence in clean_tokens]
+        return lem_tokens
+    return clean_tokens
 
 
 def save_metadata(vocab, metadata_file_path):
@@ -95,3 +87,25 @@ def calculate_embeddings(model, word1, word2):
     embedding2 = model.wv[word2]
     distance = euclidean(embedding1, embedding2)
     return distance
+
+def pull_from_book_metadata(book_path) -> dict:
+    '''
+    args:
+    book_path: str -- path to the book file
+
+    returns: dict -- dictionary mapping important characters to their names
+    
+    '''
+    with open(book_path, 'r') as f:
+        lines = f.readlines()
+        #Clean up anything that is not ascii
+        lines = [line.encode('ascii', 'ignore').decode() for line in lines]
+
+    book_dict = {}
+    for line in lines:
+        line = line.strip().split(':')
+        line[0] = line[0].lower().strip()
+        line[1] = line[1].lower().strip()
+        book_dict[line[0]] = line[1]
+
+    return book_dict
