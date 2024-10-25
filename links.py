@@ -6,7 +6,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize, MWETokenizer
 from nltk.stem import WordNetLemmatizer
 import numpy as np
 from gensim.models import Word2Vec
-from data_processing import preprocess, save_metadata
+from data_processing import preprocess, save_metadata, calculate_embeddings
 import os
 
 # Define what we need to preprocess
@@ -54,7 +54,15 @@ w_vec = np.array([model.wv[word] for word in words])
 print(words[:10])
 
 #Save files
-np.savetxt('./projector_files/links_mwe.tsv', w_vec, delimiter='\t')
-save_metadata(words, './projector_files/mwe_meta_links.tsv')
+# np.savetxt('./projector_files/links_mwe.tsv', w_vec, delimiter='\t')
+# save_metadata(words, './projector_files/mwe_meta_links.tsv')
+
+#find distance between marthedaubreuil and poirot
+
+print("Distance between protagionist and antagionist:", calculate_embeddings(model, "poirot", "marthedaubreuil"))
+print("Distance between protagionist and murder weapon:", calculate_embeddings(model, "poirot", "dagger"))
+print("Distance between antagionist and murder weapon:", )
+print("Distance between victim and murder weapon", )
+print("Distance between victim and antagionist", )
 
 print('end')

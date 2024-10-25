@@ -1,6 +1,7 @@
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize, MWETokenizer
 from nltk.stem import WordNetLemmatizer
+from scipy.spatial.distance import euclidean
 import sys
 import csv
 
@@ -76,6 +77,21 @@ def save_metadata(vocab, metadata_file_path):
     Writes the tokens to the metadata file
     
     '''
-    with open(metadata_file_path, 'w') as f:
+    with open(metadata_file_path, 'w', encoding='utf-8') as f:
         for token in vocab:
             f.write(f"{token}\n")
+
+def calculate_embeddings(model, word1, word2):
+    '''
+    args:
+    model: Word2Vec -- the trained model
+    word1: str -- the first word
+    word2: str -- the second word
+
+    returns: float -- the euclidean distance between the two words
+    
+    '''
+    embedding1 = model.wv[word1]
+    embedding2 = model.wv[word2]
+    distance = euclidean(embedding1, embedding2)
+    return distance
