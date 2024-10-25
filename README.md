@@ -12,8 +12,8 @@
 
 1. Download the data from [Project Gutenberg](https://www.gutenberg.org/) (Sample code to do this is is `test.ipynb`).
 2. Run `python3 nltk_downloads.py` to download the required nltk data.
-3. Create a python file that looks similar to `links.py` to store the links to the books you want to analyze. We ran `ackroyd.py`, `links.py` and `styles.py` for our analysis. Run the file when you are done to create the proper tensorboard files.
-4. For tensorboard visualization, edit `projector_files/projector_config.pbtxt` and create a new configuration. Look at that file for syntax.
+3. Create a file with the contents of a Data/books and add it to the book folder. Create another file to store the books metadata following the format of `The-Murder-on-the-Links.txt` in the Data/book_metadata. Ensure that both of these files have the exact same name.
+4. Create a python file that looks similar to `links.py` to store the links to the books you want to analyze. We ran `ackroyd.py`, `links.py` and `styles.py` for our analysis. Run the file when you are done to create the proper tensorboard files.
 
 ### Visualization Setup
 
