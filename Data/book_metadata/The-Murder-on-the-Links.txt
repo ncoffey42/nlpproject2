@@ -1,4 +1,5 @@
 ﻿protagionist: Hercule Poirot
 antagonist: Marthe Daubreuil
+victim: Paul Renauld
 climax chapter: 23
 murder weapon: dagger

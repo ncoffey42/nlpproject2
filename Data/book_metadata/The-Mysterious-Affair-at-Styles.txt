@@ -1,4 +1,5 @@
 ﻿protagionist: Hercule Poirot
 antagonist: Alfred Inglethorp
+victim: Emily Inglethorp
 climax chapter: 12
 murder weapon: strychnine
