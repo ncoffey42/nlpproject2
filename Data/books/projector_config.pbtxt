@@ -1,7 +1,0 @@
-embeddings {
-
-    tensor_name: "Ackroyd CBOW"
-    tensor_path: "The-Murder-of-Roger-Ackroyd-CBOW_mwe.tsv"
-    metadata_path: "mwe_meta_ackroyd.tsv"
-}
-
