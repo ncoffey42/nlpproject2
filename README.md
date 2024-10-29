@@ -1,5 +1,10 @@
 # nlpproject
 
+## Deliverables
+
+- Report: deliverables/NLP_Project_1_report.pdf
+- Presentation slides: deliverables/NLP_Project_1_slides.pdf
+
 ## Setup
 
 ### Project Setup
