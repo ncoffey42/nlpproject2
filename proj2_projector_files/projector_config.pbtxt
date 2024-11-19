@@ -1,0 +1,16 @@
+embeddings: {
+    tensor_name: "Styles"
+    tensor_path: "styles.tsv"
+    metadata_path: "meta_styles.tsv"
+}
+
+embeddings: {
+    tensor_name: "Styles2"
+    tensor_path: "styles2.tsv"
+    metadata_path: "meta_styles2.tsv"
+}
+embeddings: {
+    tensor_name: "Styles3"
+    tensor_path: "styles3.tsv"
+    metadata_path: "meta_styles3.tsv"
+}
