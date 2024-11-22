@@ -8,19 +8,19 @@ import numpy as np
 
 nlp = spacy.load("en_core_web_lg")
 
-def preprocess(file_path, word_dict, character_ner, lem=0):
+def preprocess(file_path, word_dict=None, character_ner=None, lem=0):
 
     '''
     args:
     file_path: str -- path to the book file
-    word_dict: dict -- dictionary mapping words to their corresponding character names
-    character_ner -- list of dictonaries, used for custom Named Entity Recognition labelling
+    OPTIONAL word_dict: dict -- dictionary mapping words to their corresponding character names
+    OPTIONAL character_ner -- list of dictonaries, used for custom Named Entity Recognition labelling
         Example:
             character_ner = [
             {"label": "PERSON", "pattern": "alfredInglethorp"},
             {"label": "PERSON", "pattern": "emilyInglethorp"}
             ]
-    lem: bool -- whether to lemmatize the tokens or not
+    OPTIONAL lem: bool -- whether to lemmatize the tokens or not
 
     returns:
     cleaned tokens: as a 2D list of strings -- list of sentences, each sentence is a list of tokens
@@ -32,21 +32,27 @@ def preprocess(file_path, word_dict, character_ner, lem=0):
      
 
     # Regular expression used to find references to a character within the novel
-    pattern = re.compile(r'\b(' + '|'.join(re.escape(k) for k in word_dict.keys()) + r')\b')
 
-    # Substitutes varying character aliases to one name
-    text = pattern.sub(lambda match : word_dict[match.group(0)], text)
+    if word_dict:
+
+        pattern = re.compile(r'\b(' + '|'.join(re.escape(k) for k in word_dict.keys()) + r')\b')
+
+        # Substitutes varying character aliases to one name
+        text = pattern.sub(lambda match : word_dict[match.group(0)], text)
 
     #print(text)
 
     # Adds custom NER for the novel characters - 'alfredInglethorp' == PERSON
-    ruler = nlp.add_pipe('entity_ruler', before='ner')
-    ruler.add_patterns(character_ner)
+    if character_ner:
+        if 'entity_ruler' not in nlp.pipe_names:
+            ruler = nlp.add_pipe('entity_ruler', before='ner')
+        ruler.add_patterns(character_ner)
 
 
     # Coreference resolution
     # John went home, then he went to bed. --> John went home, then John went to bed.
-    nlp.add_pipe('coreferee')
+    if 'coreferee' not in nlp.pipe_names:
+        nlp.add_pipe('coreferee')
 
     # Run spacy pipeline
     doc = nlp(text)
@@ -72,12 +78,17 @@ def preprocess(file_path, word_dict, character_ner, lem=0):
     sentences = []
     for sent in doc.sents:
         tokens = []
+
         for token in sent:
             if token.is_alpha and not token.is_stop:
                 tokens.append(token.text)
-        sentences.append(tokens)
+        if tokens:
+            # sentences.append(tokens)
+            sentences.append(" ".join(tokens))
     
-    #print(sentences[:6])
+    
+
+    # print(sentences[:6])
     return sentences
 
 
@@ -98,87 +109,80 @@ def save_metadata(vocab, metadata_file_path):
 
 
 ## Testing using The Mysterious Affair at Styles
-test_dict = {
+styles_dict = {
     'mr. inglethorp': 'alfredInglethorp',
     'mrs. inglethorp': 'emilyInglethorp',
     'alfred inglethorp' : 'alfredInglethorp',
     'inglethorp' : 'alfredInglethorp',
     'emily inglethorp' : 'emilyInglethorp',
-
-    'hercule poirot' : 'Poirot',
-    'poirot' : 'Poirot',
-    'detective poirot' : 'Poirot',
-
-    'mr. hastings' : 'Hastings',
-    'hastings' : 'Hastings',
-
-    'james japp' : 'Japp',
-    'inspector' : 'Japp',
-    'japp' : 'Japp',
-
+    'hercule poirot' : 'poirot',
+    'poirot' : 'poirot',
+    'detective poirot' : 'poirot',
+    'mr. hastings' : 'hastings',
+    'hastings' : 'hastings',
+    'james japp' : 'japp',
+    'inspector' : 'japp',
+    'japp' : 'japp',
     'john cavendish' : 'johnCavendish',
     'john' : 'johnCavendish',
     'mr. john cavendish' : 'johnCavendish',
     'mr. john' : 'johnCavendish',
     'mr. cavendish' : 'johnCavendish',
-
-
     'lawrence cavendish' : 'lawrenceCavendish',
     'mr. lawrence cavendish' : 'lawrenceCavendish',
     'lawrence' : 'lawrenceCavendish',
     'mr. lawrence' : 'lawrenceCavendish',
-    
     'mrs. cavendish' : 'maryCavendish',
     'mary cavendish' : 'maryCavendish',
     'mary' : 'maryCavendish',
-
     'evelyn' : 'evelynHoward',
     'evelyn howard' : 'evelynHoward',
     'howard' : 'evelynHoward',
     'miss howard' : 'evelynHoward',
-
     'cynthia murdoch' : 'cynthiaMurdoch',
     'miss murdoch' : 'cynthiaMurdoch',
     'cynthia' : 'cynthiaMurdoch',
     'murdoch' : 'cynthiaMurdoch',
-
-    'dr. bauerstein' : 'Bauerstein',
-    'bauerstein' : 'Bauerstein',
-
-    'dorcas' : 'Dorcas',
+    'dr. bauerstein' : 'bauerstein',
+    'bauerstein' : 'bauerstein',
+    'dorcas' : 'dorcas',
 }
 
 
 character_ner = [
         {"label": "PERSON", "pattern": "alfredInglethorp"},
         {"label": "PERSON", "pattern": "emilyInglethorp"},
-        {"label": "PERSON", "pattern": "Poirot"},
-        {"label": "PERSON", "pattern": "Hastings"},
-        {"label": "PERSON", "pattern": "Japp"},
+        {"label": "PERSON", "pattern": "poirot"},
+        {"label": "PERSON", "pattern": "hastings"},
+        {"label": "PERSON", "pattern": "japp"},
         {"label": "PERSON", "pattern": "johnCavendish"},
         {"label": "PERSON", "pattern": "lawrenceCavendish"},
         {"label": "PERSON", "pattern": "maryCavendish"},
         {"label": "PERSON", "pattern": "evelynHoward"},
         {"label": "PERSON", "pattern": "cynthiaMurdoch"},
-        {"label": "PERSON", "pattern": "Bauerstein"},
-        {"label": "PERSON", "pattern": "Dorcas"},
+        {"label": "PERSON", "pattern": "bauerstein"},
+        {"label": "PERSON", "pattern": "dorcas"},
 
     ]
 
-
+#book = preprocess("./Data/books/test-book.txt")
 #book = preprocess("./Data/books/test-book.txt", test_dict, character_ner)
 #print(book)
 
-tokens = preprocess("./Data/books/The-Mysterious-Affair-at-Styles.txt", test_dict, character_ner)
+tokens = preprocess("./Data/books/Styles_trimmed.txt", styles_dict, character_ner)
+#tokens = preprocess("./Data/books/test-book.txt", test_dict, character_ner)
 
-model = Word2Vec(tokens, vector_size=100, window=5, min_count=2, sg=0) #CBOW model
+with open("./Data/book_tokens/Styles.txt", 'w', encoding='utf-8') as f:
+    for sent in tokens:
+        f.write(sent + "\n")
+# model = Word2Vec(tokens, vector_size=100, window=5, min_count=2, sg=0) #CBOW model
 
-model.build_vocab(tokens)
-model.train(tokens, total_examples=model.corpus_count, epochs=10)
+# model.build_vocab(tokens)
+# model.train(tokens, total_examples=model.corpus_count, epochs=10)
 
-words = list(model.wv.index_to_key)
+# words = list(model.wv.index_to_key)
 
 # Word Vectors
-w_vec = np.array([model.wv[word] for word in words])
-np.savetxt(f'./proj2_projector_files/styles3.tsv', w_vec, delimiter='\t')
-save_metadata(words, "./proj2_projector_files/meta_styles3.tsv")
+#w_vec = np.array([model.wv[word] for word in words])
+#np.savetxt(f'./proj2_projector_files/styles3.tsv', w_vec, delimiter='\t')
+#save_metadata(words, "./proj2_projector_files/meta_styles3.tsv")
