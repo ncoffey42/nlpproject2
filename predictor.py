@@ -8,7 +8,12 @@ load_dotenv()  # take environment variables from .env.
 
 from langchain_community.document_loaders import TextLoader
 from data_processing import pull_from_book_metadata
-iterations = 1
+
+
+iterations = 1 #Number of times to run the program
+books = ["Styles", "Ackroyd", "Links"] #Books to check (REMEMBER TO HAVE METADATA FOR GROUND TRUTH FOR THIS BOOK)
+
+
 #from spacy_processing import preprocess
 
 # with open(file_path) as f:
@@ -196,18 +201,29 @@ links_character_ner = [
         {"label": "PERSON", "pattern": "georgeconnor"},
     ]
 
-
-
-# text = preprocess(file_path, styles_dict, styles_character_ner)
-#loader = TextLoader(file_path)
-
+#Initializing stat dicts for later
 times_correct = {
     "Styles": 0,
     "Ackroyd": 0,
     "Links": 0
 }
+
+times_correct_parts = {
+    "Protagonist": 0,
+    "Victim": 0,
+    "Antagonist": 0,
+    "Climax Chapter": 0,
+    "Murder Weapon": 0
+}
+
+#The actual loop -> runs on each of the books a certain number of times and keeps track of what it got correct
+# You can run this a number of times because LLM's may give different results, given their random nature
+# Or (by default) just run it once and see what happens
+
 for i in range(iterations):
-    for book in ["Styles", "Ackroyd", "Links"]:
+    for book in books:
+
+        #Load in the book -> preprocessed and cleaned up first
         loader = TextLoader("./Data/book_tokens/" + book + ".txt")
 
         docs = loader.load()
@@ -215,8 +231,7 @@ for i in range(iterations):
         #Ground truthed answers
         answers = pull_from_book_metadata(f"./Data/book_metadata/{book}.txt")
 
-        # print(len(docs))
-
+        # langchain RAG stuff here -> straight from documentation
         from langchain_openai import ChatOpenAI
 
         llm = ChatOpenAI(model="gpt-4o-mini")
@@ -237,6 +252,7 @@ for i in range(iterations):
         from langchain.chains.combine_documents import create_stuff_documents_chain
         from langchain_core.prompts import ChatPromptTemplate
 
+        #System prommpt that basically got us to only have one word answers
         system_prompt = (
             "You are an assistant for answering questions about Agatha Christie Mystery novels."
             "Use the following retrieved context to help answer the question"
@@ -257,56 +273,68 @@ for i in range(iterations):
         question_answer_chain = create_stuff_documents_chain(llm, prompt)
         rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
+        #Start the test
         print(book)
 
         correct_answers = 0
 
+        # Each of these "Invoke" calls is a question that the LLM is asked to answer -> this calls from the OpenAI API. We are using 4o mini for cost reasons
         results = rag_chain.invoke({"input": "Who is the victim?"})
         print("Victim:", end=" ")
         print(results["answer"])
 
-        if answers["victim"] in results["answer"]:
+        # If the one-word answer is in the ground truth, then it is correct. Lowercasing the LLM answer because it can be finicky
+        if answers["victim"] in results["answer"].lower():
             print("Correct")
             correct_answers += 1
-            times_correct[book] += 1    
+            times_correct[book] += 1  
+            times_correct_parts["Victim"] += 1  
 
         results = rag_chain.invoke({"input": "Who is the protagonist?"})
         print("Protagonist:", end=" ")
         print(results["answer"])
 
-        if answers["protagonist"] in results["answer"]:
+        if answers["protagonist"] in results["answer"].lower():
             print("Correct")
             correct_answers += 1 
             times_correct[book] += 1   
+            times_correct_parts["Protagonist"] += 1
 
         results = rag_chain.invoke({"input": "Who is the murderer?"})
         print("Murderer:", end=" ")
         print(results["answer"])
 
-        if answers["antagonist"] in results["answer"]:
+        if answers["antagonist"] in results["answer"].lower():
             print("Correct")
             correct_answers += 1 
             times_correct[book] += 1   
+            times_correct_parts["Antagonist"] += 1
 
         results = rag_chain.invoke({"input": "Which chapter does the climax occur?"})
         print("Climax:", end=" ")
         print(results["answer"])
         
-        if answers["climax chapter"] in results["answer"]:
+        if answers["climax chapter"] in results["answer"].lower():
             print("Correct")
             correct_answers += 1 
             times_correct[book] += 1   
+            times_correct_parts["Climax Chapter"] += 1
 
         results = rag_chain.invoke({"input": "What was the murder weapon?"})
-        print("Climax:", end=" ")
+        print("Murder Weapon:", end=" ")
         print(results["answer"])
         
-        if answers["murder weapon"] in results["answer"]:
+        if answers["murder weapon"] in results["answer"].lower():
             print("Correct")
             correct_answers += 1 
             times_correct[book] += 1   
+            times_correct_parts["Murder Weapon"] += 1
 
         print(f"{correct_answers} out of 5 correct")
 
+#Print final stats at the end
 print("Times correct:", times_correct)
 print(f"(This is out of {iterations*5} times)")
+
+print("Parts correct:", times_correct_parts)
+print(f"(This is out of {iterations*len(books)} times)")
