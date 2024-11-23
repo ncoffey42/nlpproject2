@@ -1,0 +1,5 @@
+﻿protagonist: poirot
+antagonist: alfredinglethorp
+victim: emilyinglethorp
+climax chapter: xii
+murder weapon: strychnine

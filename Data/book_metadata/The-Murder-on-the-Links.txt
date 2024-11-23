@@ -1,5 +1,0 @@
-﻿protagonist: poirot
-antagonist: marthedaubreuil
-victim: paul
-climax chapter: 23
-murder weapon: dagger

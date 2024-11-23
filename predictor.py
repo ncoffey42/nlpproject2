@@ -7,8 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
 from langchain_community.document_loaders import TextLoader
+from data_processing import pull_from_book_metadata
+iterations = 1
 #from spacy_processing import preprocess
-file_path = "Data/books/The-Mysterious-Affair-at-Styles.txt"
 
 # with open(file_path) as f:
 #     text = f.read()
@@ -30,6 +31,8 @@ file_path = "Data/books/The-Mysterious-Affair-at-Styles.txt"
 
 # with open("Data/books/The-Mysterious-Affair-at-Styles-Chapter-XIII.txt", "w") as f:
 #     f.write(text)
+
+#This is a lot of code, but basically this is taking the characters and their aliases and creating a dictionary to make sure they are treated as the same character. This is also used with preprocessing the texts
 styles_dict = {
     'mr. inglethorp': 'alfredinglethorp',
     'mrs. inglethorp': 'emilyinglethorp',
@@ -104,7 +107,7 @@ ackroyd_dict = {
     'caroline sheppard': 'carolinesheppard',
     'caroline': 'carolinesheppard',
     'mrs. sheppard': 'carolinesheppard',
-    'dr. sheppard': 'jamesSheppard',
+    'dr. sheppard': 'jamessheppard',
     'sheppard': 'jamessheppard',
     'james sheppard': 'jamessheppard',
     'james': 'jamessheppard',
@@ -197,67 +200,113 @@ links_character_ner = [
 
 # text = preprocess(file_path, styles_dict, styles_character_ner)
 #loader = TextLoader(file_path)
-for path in ["./Data/book_tokens/Styles.txt", "./Data/book_tokens/Ackroyd.txt", "./Data/book_tokens/Links.txt"]:
-    loader = TextLoader(path)
 
-    docs = loader.load()
+times_correct = {
+    "Styles": 0,
+    "Ackroyd": 0,
+    "Links": 0
+}
+for i in range(iterations):
+    for book in ["Styles", "Ackroyd", "Links"]:
+        loader = TextLoader("./Data/book_tokens/" + book + ".txt")
 
-    # print(len(docs))
+        docs = loader.load()
 
-    from langchain_openai import ChatOpenAI
+        #Ground truthed answers
+        answers = pull_from_book_metadata(f"./Data/book_metadata/{book}.txt")
 
-    llm = ChatOpenAI(model="gpt-4o-mini")
+        # print(len(docs))
 
-    from langchain_core.vectorstores import InMemoryVectorStore
-    from langchain_openai import OpenAIEmbeddings
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
+        from langchain_openai import ChatOpenAI
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    splits = text_splitter.split_documents(docs)
-    vectorstore = InMemoryVectorStore.from_documents(
-        documents=splits, embedding=OpenAIEmbeddings()
-    )
+        llm = ChatOpenAI(model="gpt-4o-mini")
 
-    retriever = vectorstore.as_retriever()
+        from langchain_core.vectorstores import InMemoryVectorStore
+        from langchain_openai import OpenAIEmbeddings
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-    from langchain.chains import create_retrieval_chain
-    from langchain.chains.combine_documents import create_stuff_documents_chain
-    from langchain_core.prompts import ChatPromptTemplate
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        splits = text_splitter.split_documents(docs)
+        vectorstore = InMemoryVectorStore.from_documents(
+            documents=splits, embedding=OpenAIEmbeddings()
+        )
 
-    system_prompt = (
-        "You are an assistant for answering questions about Agatha Christie Mystery novels."
-        "Use the following retrieved context to help answer the question"
-        # "Use three sentences maximum and keep the answer concise"
-        "Answer with one word in this format, 'The Answer is: '"
-        "\n\n"
-        "{context}"
-    )
+        retriever = vectorstore.as_retriever()
 
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", system_prompt),
-            ("human", "{input}"),
-        ]
-    )
+        from langchain.chains import create_retrieval_chain
+        from langchain.chains.combine_documents import create_stuff_documents_chain
+        from langchain_core.prompts import ChatPromptTemplate
+
+        system_prompt = (
+            "You are an assistant for answering questions about Agatha Christie Mystery novels."
+            "Use the following retrieved context to help answer the question"
+            # "Use three sentences maximum and keep the answer concise"
+            "Answer with one word in this format, 'The Answer is: '"
+            "\n\n"
+            "{context}"
+        )
+
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", system_prompt),
+                ("human", "{input}"),
+            ]
+        )
 
 
-    question_answer_chain = create_stuff_documents_chain(llm, prompt)
-    rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+        question_answer_chain = create_stuff_documents_chain(llm, prompt)
+        rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
-    print(path)
+        print(book)
 
-    results = rag_chain.invoke({"input": "Who is the victim?"})
-    print("Victim:", end=" ")
-    print(results["answer"])
+        correct_answers = 0
 
-    results = rag_chain.invoke({"input": "Who is the protagonist?"})
-    print("Protagonist:", end=" ")
-    print(results["answer"])
+        results = rag_chain.invoke({"input": "Who is the victim?"})
+        print("Victim:", end=" ")
+        print(results["answer"])
 
-    results = rag_chain.invoke({"input": "Who is the murderer?"})
-    print("Murderer:", end=" ")
-    print(results["answer"])
+        if answers["victim"] in results["answer"]:
+            print("Correct")
+            correct_answers += 1
+            times_correct[book] += 1    
 
-    results = rag_chain.invoke({"input": "Which chapter does the climax occur?"})
-    print("Climax:", end=" ")
-    print(results["answer"])
+        results = rag_chain.invoke({"input": "Who is the protagonist?"})
+        print("Protagonist:", end=" ")
+        print(results["answer"])
+
+        if answers["protagonist"] in results["answer"]:
+            print("Correct")
+            correct_answers += 1 
+            times_correct[book] += 1   
+
+        results = rag_chain.invoke({"input": "Who is the murderer?"})
+        print("Murderer:", end=" ")
+        print(results["answer"])
+
+        if answers["antagonist"] in results["answer"]:
+            print("Correct")
+            correct_answers += 1 
+            times_correct[book] += 1   
+
+        results = rag_chain.invoke({"input": "Which chapter does the climax occur?"})
+        print("Climax:", end=" ")
+        print(results["answer"])
+        
+        if answers["climax chapter"] in results["answer"]:
+            print("Correct")
+            correct_answers += 1 
+            times_correct[book] += 1   
+
+        results = rag_chain.invoke({"input": "What was the murder weapon?"})
+        print("Climax:", end=" ")
+        print(results["answer"])
+        
+        if answers["murder weapon"] in results["answer"]:
+            print("Correct")
+            correct_answers += 1 
+            times_correct[book] += 1   
+
+        print(f"{correct_answers} out of 5 correct")
+
+print("Times correct:", times_correct)
+print(f"(This is out of {iterations*5} times)")
