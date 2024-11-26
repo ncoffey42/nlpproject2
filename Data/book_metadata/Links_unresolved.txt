@@ -1,0 +1,5 @@
+protagonist: poirot
+antagonist: mrsdaubreuil
+victim: paulrenault
+climax chapter: xxiii
+murder weapon: dagger

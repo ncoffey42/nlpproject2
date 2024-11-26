@@ -11,7 +11,7 @@ from data_processing import pull_from_book_metadata
 
 
 iterations = 1 #Number of times to run the program
-books = ["Styles", "Ackroyd", "Links"] #Books to check (REMEMBER TO HAVE METADATA FOR GROUND TRUTH FOR THIS BOOK)
+books = ["Styles", "Styles_unresolved", "Ackroyd", "Ackroyd_unresolved", "Links", "Links_unresolved"] #Books to check (REMEMBER TO HAVE METADATA FOR GROUND TRUTH FOR THIS BOOK)
 
 
 #from spacy_processing import preprocess
@@ -204,8 +204,11 @@ links_character_ner = [
 #Initializing stat dicts for later
 times_correct = {
     "Styles": 0,
+    "Styles_unresolved" : 0,
     "Ackroyd": 0,
-    "Links": 0
+    "Ackroyd_unresolved": 0,
+    "Links": 0,
+    "Links_unresolved": 0
 }
 
 times_correct_parts = {

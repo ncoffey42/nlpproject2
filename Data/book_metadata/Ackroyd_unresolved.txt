@@ -1,0 +1,5 @@
+protagonist: poirot
+antagonist: jamesshepherd
+victim: rogerackroyd
+climax chapter: xxvi
+murder weapon: dagger
