@@ -13,7 +13,6 @@ from data_processing import pull_from_book_metadata
 iterations = 1 #Number of times to run the program
 books = ["Styles", "Styles_unresolved", "Ackroyd", "Ackroyd_unresolved", "Links", "Links_unresolved"] #Books to check (REMEMBER TO HAVE METADATA FOR GROUND TRUTH FOR THIS BOOK)
 
-
 #from spacy_processing import preprocess
 
 # with open(file_path) as f:
@@ -239,15 +238,28 @@ for i in range(iterations):
 
         llm = ChatOpenAI(model="gpt-4o-mini")
 
+        # Save embedding for reuse to reduce Token costs and speedup runtime
+        embedding_path = f"./saved_embeddings/{book}_faiss_embed"
+
         from langchain_core.vectorstores import InMemoryVectorStore
         from langchain_openai import OpenAIEmbeddings
         from langchain_text_splitters import RecursiveCharacterTextSplitter
+        from langchain_community.vectorstores import FAISS
 
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        splits = text_splitter.split_documents(docs)
-        vectorstore = InMemoryVectorStore.from_documents(
-            documents=splits, embedding=OpenAIEmbeddings()
-        )
+
+        if os.path.exists(embedding_path):
+            vectorstore = FAISS.load_local(embedding_path, OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+            print("EMBEDDING EXISTS")
+        else:
+            print("CREATING EMBEDDING")
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            splits = text_splitter.split_documents(docs)
+            # vectorstore = InMemoryVectorStore.from_documents(
+            #     documents=splits, embedding=OpenAIEmbeddings()
+            # )
+            vectorstore = FAISS.from_documents(splits, OpenAIEmbeddings())
+            vectorstore.save_local(embedding_path)
+
 
         retriever = vectorstore.as_retriever()
 
