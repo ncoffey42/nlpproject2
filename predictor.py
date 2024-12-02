@@ -353,3 +353,27 @@ print(f"(This is out of {iterations*5} times)")
 
 print("Parts correct:", times_correct_parts)
 print(f"(This is out of {iterations*len(books)} times)")
+
+#Generate a figure with matplotlic -> do 5 bars -- protagonist, antagonist, etc, and on y axis, mark the correct count
+
+import matplotlib.pyplot as plt
+
+plt.bar(list(times_correct.keys()), list(times_correct.values()), align='center', color = ["blue", "blue", "green", "green", "red", "red"])
+
+plt.title(f"Accuracy of Plot Elements by Element (max accuracy is {iterations*5} out of {iterations*5})")
+plt.xlabel("Book")
+plt.ylabel("Times Correct")
+plt.legend()
+
+# Show the plot
+plt.show()
+
+plt.bar(list(times_correct_parts.keys()), list(times_correct_parts.values()), align='center', color = ["blue", "green", "red", "yellow", "purple"])
+
+plt.title(f"Accuracy of Plot Elements by Element (max accuracy is {iterations*len(books)} out of {iterations*len(books)})")
+plt.xlabel("Plot Element")
+plt.ylabel("Times Correct")
+plt.legend()
+
+# Show the plot
+plt.show()
