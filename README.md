@@ -27,11 +27,3 @@
 3. The results for the long prompts is in long_answer_results.txt
 
 Agatha Christie -- Implement a LangChain-based reasoning system that can interpret your author's novels and the plots.
-
-## Docs
-
-[Info Doc](https://docs.google.com/document/d/1SzlvAJDJ_J6TmqEKMKzm24yskDTdLdnPAg5V2sZGQQU/edit#heading=h.drgugs2suv61)
-
-[LaTeX Code for Project 1](https://docs.google.com/document/d/1CAOgCz53kaDHoT7jyzDVTkqXNURDrYvL9NK5dGl2nt0/edit?tab=t.0)
-
-[Slides for Project 1](https://docs.google.com/presentation/d/1ZUDemqwNvS-08xp7VWl1Ov0Y36tAkW7FoDArsWdbfEw/edit#slide=id.p)
